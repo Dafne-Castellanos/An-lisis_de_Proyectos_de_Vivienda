@@ -1,0 +1,658 @@
+---
+title: "ANÁLISIS DE PROYECTOS DE VIVIENDA DE LOS DEPARTAMENTOS ANTIOQUIA, ATLÁNTICO Y BOGOTÁ DC"
+author: "Dafne Valeria Castellanos Rosas"
+date: 'Mayo 21 del 2022'
+linkcolor: blue
+geometry: margin = 2cm
+output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+# Librerías
+library(readxl)
+base <- read_excel("base.xlsx")
+library('ggplot2')
+library('dplyr')
+library("janitor")
+library("tidyverse")
+library("flextable")
+library("scales")
+library("moments")
+```
+# Objetivos 
+
+## Objetivo general
+
+Analizar las características más frecuentes de las viviendas en los departamentos Antioquia, Atlántico y Bogotá DC para ofrecerles más posibilidades a los compradores e inversionistas de una inmobiliaria.  
+
+## Objetivos específicos
+
+1. Identificar los tipos y las escalas de medición de las variables: constructora, estrato, precio, área construida, alcobas y departamento.  
+2. Construir las tablas y las gráficas correspondientes a las variables que le interesan el cliente.  
+3. Realizar el análisis estadístico descriptivo de las tablas, las gráficas y los datos obtenidos a través de las medidas de tendencia central, dispersión, posición y forma, y el análisis inferencial de la muestra. 
+
+# Problema de Investigación
+
+A pesar de la pandemia y las consecuencias que ocasiono en la economía colombiana, desde el último semestre de 2021 se ha evidenciado una reactivación económica en la mayoría de los mercados y uno de los sectores que ha presentado un rendimiento muy positivo ha sido el inmobiliario. Según Galería Inmobiliaria desde enero hasta abril de 2022 se han vendido 84.347 viviendas VIS y No VIS, la cifra más alta que se ha presentado en el histórico de ventas del país para los cuatro primeros meses de un año (Ministerio de Vivienda, 2022). Del mismo modo, 2021 fue el mejor año para el mercado inmobiliario pues se superó el valor de viviendas comercializadas respecto al 2020 en un 28,6% (Colprensa, 2022). Teniendo en cuenta el auge que está presentando la venta de viviendas en Colombia una inmobiliaria que busca brindarle opciones llamativas a los compradores y a los inversionistas; desea analizar los siguientes aspectos de los proyectos de vivienda: la constructora, el estrato, el precio, el área construida y las alcobas. Sus sucursales se ubican en los departamentos de Atlántico, Antioquia y Bogotá DC, por ello, solicitan realizar el estudio en dichos departamentos.  
+
+De este modo, la pregunta de investigación planteada con base en la petición del cliente es: ¿Cuáles son los comportamientos más relevantes de las variables constructora, estrato, precio, área construida y alcobas en los proyectos de vivienda de los departamentos Antioquia, Atlántico y Bogotá DC? 
+
+# Descripción de la base de datos
+
+La base de datos utilizada para el proyecto fue tomada de los registros de proyectos de vivienda de la CAMACOL (Cámara Colombiana de la Construcción) del año 2021. Esta cuenta con 15 columnas y 937 registros, no obstante, al cliente le interesa saber únicamente el comportamiento de las variables constructora, estrato, precio, área construida y alcobas en los proyectos del Atlántico, Antioquia y Bogotá DC, por lo cual, se filtraron los registros por dichos departamentos, quedando en total 635 y se seleccionaron seis columnas. 
+
+Las columnas seleccionadas se describen a continuación: 
+
+1. Constructora: la entidad que se encarga del proyecto. 
+2. Estrato: el estrato social al que pertenece el barrio donde está el proyecto.
+3. Precio mod: el precio del proyecto en formato número.
+4. Área construida: el área construida del proyecto. 
+5. Alcobas: el número de alcobas que tiene el proyecto.
+6. Departamento: el departamento al que pertenece el proyecto.
+
+# Tipos de Variables y Escala de Medición
+
+Los tipos de variables y las escalas de medición identificadas en cada una de las columnas de la base fueron: 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lll}
+\hline
+\textbf{Nombre de la columna} & \textbf{Tipo de variable} & \textbf{Escala de medición} \\ \hline
+Constructora                  & Cualitativa               & Nominal                     \\
+Estrato                       & Cualitativa               & Ordinal                     \\
+precio\_mod                   & Cuantitativa continua     & Razón                       \\
+area\_construida              & Cuantitativa continua     & Razón                       \\
+alcobas                       & Cuantitativa discreta     & Razón                       \\
+Departamento                  & Cualitativa               & Nominal                     \\ \hline
+\end{tabular}
+\end{table}
+
+# Análisis Descriptivo y Exploratorio de las variables
+
+## Variables Cualitativas
+
+### Variable Constructora
+
+En primer lugar, para atender a las peticiones del cliente se construyeron tablas de frecuencias y diagramas de barras y de torta para visualizar los aspectos más relevantes de los proyectos en los tres departamentos con relación a la constructora y el estrato. A continuación, se muestran los gráficos y las tablas con sus respectivas interpretaciones: 
+
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE, fig.width=5, fig.height=3}
+
+# maximo y minimos n con su porcentaje
+
+# Número de proyectos por Departamento
+
+#grafica de barras
+
+base %>%  
+  group_by(Departamento)%>%
+  summarise(Cantidad=n()) %>% 
+  filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC")%>% 
+  ggplot(aes(x = Departamento,y = Cantidad, fill=Departamento)) + 
+  geom_bar(stat = "identity")+ggtitle("Número de proyectos por Departamento")+ ylim(c(0,300))+
+  theme(plot.title = element_text(hjust = 0.5))+ geom_text(aes(label=Cantidad), vjust=-0.2)
+  
+```
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
+# tabla de distribución número de proyectos por departamento
+
+# base %>%  
+#   group_by(Departamento)%>%
+#   summarise(Cantidad=n()) %>% 
+#   filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC")%>%
+#   tabyl(Departamento) %>% 
+#   flextable() %>% 
+#   fontsize(size=14) %>% 
+#   autofit()
+
+base %>%  
+  group_by(Departamento)%>%
+  summarise(Cantidad=n()) %>% 
+  filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC")%>%
+  ungroup() %>% 
+  mutate(Porcentaje=round(Cantidad/sum(Cantidad)*100,2)) %>% 
+  knitr::kable()
+```
+
+Respecto al número de proyectos por departamento se puede evidenciar que Bogotá DC es el departamento con más proyectos con un total de 277 lo que corresponde a un 43,62%. Antioquia es el segundo departamento con 250 proyectos, es decir, un 39.37%. Por último, esta Atlántico representando el 17,01% con 108 proyectos.
+
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE,fig.width=9, fig.height=4}
+# Grafico de barras Número de proyectos por constructora en Antioquia
+base %>%  
+  filter(Departamento=="Antioquia") %>% 
+  group_by(Constructora)%>%
+  summarise(Cantidad=n()) %>% 
+  ggplot(aes(x = Constructora, y = Cantidad,  fill=Constructora)) + 
+  geom_bar(stat = "identity")+coord_flip()+ggtitle("Número de proyectos por constructora en Antioquia")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  ylim(c(0,80))+ geom_text(aes(label=Cantidad), hjust=-0.8)
+```
+```{r, warning=FALSE, echo=FALSE}
+# tabla de distribución Número de proyectos por Constructoras en Antioquia
+base %>%  
+  filter(Departamento=="Antioquia") %>% 
+  group_by(Constructora)%>%
+  summarise(Cantidad=n()) %>% 
+  ungroup() %>% 
+  mutate(Porcentaje=round(Cantidad/sum(Cantidad)*100,2)) %>%
+  knitr::kable()
+```
+
+Ahora, en Antioquia se puede observar que la constructora con más proyectos en la región es Vértice Ingeniería que cuenta con 63 construcciones lo cual representa el 25,2%, por otro lado, las constructoras con menos proyectos son Organización Edyfica SA y Londoño Gómez Propiedad Raíz que poseen tres edificaciones en el departamento, representando el 1,2% cada una. 
+
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE,fig.width=8, fig.height=4}
+#  Grafico de barras Número de proyectos por constructora en Atlántico
+base %>%  
+  filter(Departamento=="Atlantico") %>% 
+  group_by(Constructora)%>%
+  summarise(Cantidad=n()) %>% 
+  ggplot(aes(x = Constructora, y = Cantidad, fill=Constructora)) + 
+  geom_bar(stat = "identity")+coord_flip()+ggtitle("Número de proyectos por constructora en Atlántico")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  ylim(c(0,50))+ geom_text(aes(label=Cantidad), hjust=-0.8)
+```
+```{r, warning=FALSE, echo=FALSE}
+# tabla de distribución Número de proyectos por Constructoras en Atlantico
+base %>%  
+  filter(Departamento=="Atlantico") %>% 
+  group_by(Constructora)%>%
+  summarise(Cantidad=n()) %>% 
+  ungroup() %>% 
+  mutate(Porcentaje=round(Cantidad/sum(Cantidad)*100,2)) %>%
+  knitr::kable()
+```
+
+Luego la constructora con más proyectos en el Atlántico es Amarilo SAS que cuenta con 36 propiedades construidas representando el 33,3%. Las constructoras Impulso Urbano SA y Constructora Bolivar son las empresas con menos proyectos con 2 edificaciones y el 1,85% cada una.   
+
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE,fig.width=6, fig.height=3.5}
+#  Grafico de barras Número de proyectos por constructora en Bogotá DC
+base %>%  
+  filter(Departamento=="Bogotá DC") %>% 
+  group_by(Constructora)%>%
+  summarise(Cantidad=n()) %>% 
+  ggplot(aes(x = Constructora, y = Cantidad))+theme_minimal()+
+  geom_bar(stat="identity",fill="#8338ec")+coord_flip()+ggtitle("Número de proyectos por constructora en Bogotá DC")+
+  theme(plot.title = element_text(hjust = 1.5))+
+  ylim(c(0,60))+ geom_text(aes(label=Cantidad), hjust=-0.8)
+```
+```{r, warning=FALSE, echo=FALSE}
+# tabla de distribución Número de proyectos por Constructoras en Bogotá DC
+base %>%  
+  filter(Departamento=="Bogotá DC") %>% 
+  group_by(Constructora)%>%
+  summarise(Cantidad=n()) %>% 
+  ungroup() %>% 
+  mutate(Porcentaje=round(Cantidad/sum(Cantidad)*100,2)) %>%
+  knitr::kable()
+```
+
+Por último, en Bogotá se puede evidenciar que la constructora con mayor número de proyectos es Arquitectura y Concreto SAS con 46 construcciones lo que representa el 16,6%. Por otra parte, siete constructoras cuentan con un solo proyecto representando el 0,36% cada una. 
+
+### Variable Estrato
+
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE, fig.height=4}
+# grafico de torta porcentaje de proyectos por estrato en Antioquia
+base$Estrato <- as.character(base$Estrato)
+base %>%  
+  filter(Departamento=="Antioquia") %>% 
+  group_by(Estrato)%>%
+  summarise(Cantidad=n()) %>% 
+  ungroup() %>% 
+  mutate(Porcentaje=round(Cantidad/sum(Cantidad)*100,2)) %>% 
+  ggplot(aes(x = "", y = Porcentaje, fill=Estrato)) + 
+  geom_bar(stat = "identity")+ 
+  ggtitle("Porcentaje de proyectos por estrato en Antioquia")+
+  coord_polar(theta = "y")+
+  geom_col(color = "white")+
+  geom_text(aes(label = Porcentaje),color = "white",position = position_stack(vjust = 0.5))
+  #scale_fill_brewer(palette="Blues")
+
+
+```
+
+En Antioquia el estrato 4 cuenta con la frecuencia más alta de proyectos, pues el 47,6% de las construcciones pertenecen a dicho estrato. En cambio, el estrato 3 tiene el menor número de proyectos pues cuenta con el 6,4%. 
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE, fig.height=4}
+# grafico de torta porcentaje de proyectos por estrato en Atlantico
+base %>%  
+  filter(Departamento=="Atlantico") %>% 
+  group_by(Estrato)%>%
+  summarise(Cantidad=n()) %>% 
+  ungroup() %>% 
+  mutate(Porcentaje=round(Cantidad/sum(Cantidad)*100,2)) %>% 
+  ggplot(aes(x = "", y = Porcentaje, fill=Estrato)) + 
+  geom_bar(stat = "identity")+
+  ggtitle("Porcentaje de proyectos por estrato en Atlántico")+
+  coord_polar(theta = "y",start=0)+
+  geom_col(color = "white")+
+  geom_text(aes(label = Porcentaje),color = "white",position = position_stack(vjust = 0.5))
+  #scale_fill_brewer(palette="Blues")
+  #scale_fill_manual(values=c("#fb8500", "#ffb703", "#023047","#219ebc"))
+  
+```
+
+Para Atlántico la mayor cantidad de proyectos se encuentran en el estrato 4, al igual que para Antioquia, y dicho estrato cuenta con el 37,96% de las construcciones. Ahora el estrato 2 posee apenas 5,56% de las edificaciones, siendo el estrato con menor número. 
+
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE, fig.height=4}
+# grafico de torta porcentaje de proyectos por estrato en Bogotá DC
+base %>%  
+  filter(Departamento=="Bogotá DC") %>% 
+  group_by(Estrato)%>%
+  summarise(Cantidad=n()) %>% 
+  ungroup() %>% 
+  mutate(Porcentaje=round(Cantidad/sum(Cantidad)*100,2)) %>% 
+  ggplot(aes(x = "", y = Porcentaje, fill=Estrato)) + 
+  geom_bar(stat = "identity")+
+  ggtitle("Porcentaje de proyectos por estrato en Bogotá DC")+
+  coord_polar(theta = "y",start=0)+
+  geom_col(color = "white")+
+  geom_text(aes(label = Porcentaje),color = "white",position = position_stack(vjust = 0.5))
+  #scale_fill_brewer(palette="Blues")
+  #scale_fill_manual(values=c("#fb8500", "#ffb703", "#023047","#219ebc"))
+  
+```
+
+El estrato 4 para Bogotá DC también cuenta con el mayor registro de proyectos representado por el 42,96%. En contraste con el 3,97% del estrato 2 que es el sector con menor número de construcciones. 
+
+## Variables Cuantitativas
+
+### Medidas de tendencia central y posición para la variable Precio
+
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
+######################### PRECIO
+
+# Diagrama de cajas y bigotes precio
+base %>% 
+  filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>%
+  ggplot(aes(x=Departamento, y=precio_mod)) + 
+  geom_boxplot()+coord_flip()+
+  labs(x="Departamento", y="Precio")+
+  ggtitle("Diagrama de Cajas y Bigotes de los precios en los departamentos")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_y_continuous(labels = dollar)
+```
+```{r, warning=FALSE, echo=FALSE}
+# Medidas de tendencia central para PRECIO
+
+base %>% filter(Departamento== "Antioquia") %>%
+  summarise(
+    media_precio=format(mean(precio_mod),big.mark=","), 
+    mediana_precio=format(median(precio_mod), big.mark=","), 
+    moda_precio=format(mode(precio_mod),big.mark=",")) %>%
+  knitr::kable(col.names = c('Media', 'Mediana', 'Moda'))
+```
+```{r, warning=FALSE, echo=FALSE}
+# Medidas de posicion PRECIO
+base %>% filter(Departamento== "Antioquia") %>% 
+  summarise(
+    q1 = format(quantile(precio_mod, 0.25), big.mark = ","),
+    q2 = format(quantile(precio_mod, 0.50), big.mark = ","),
+    q3 = format(quantile(precio_mod, 0.75), big.mark = ","),
+    iqr=format(IQR(precio_mod), big.mark = ","),
+    LS=format(quantile(precio_mod, 0.75)+1.5*(IQR(precio_mod)), big.mark=","))%>% 
+knitr::kable(col.names = c('Cuartil 1', 'Cuartil 2', 'Cuartil 3','Rango Intercuartilico',"Lim. Superior"))
+```
+
++ El precio promedio en Antioquia fue de 542,485,132 pesos. 
++ El 50% de los precios en Antioquia son de 477,945,000 pesos o menos, y el otro 50% es mayor que es valor. 
++ El precio que más se repite en Antioquia es de 149,000,000 pesos. 
++ El 25% de los proyectos en Antioquia tiene un precio de 361,752,016 pesos o menos y el otro 75% mayor a este valor.
++ El 75% de los proyectos en Antioquia tiene un precio de 664,013,000 pesos o menos y el otro 25% mayor a este valor.
++ El rango intercuartílico es de 302,260,984 pesos. 
++ Un precio se considera atípico en Antioquia con 1,117,404,476 porque es mayor al límite superior, hay sesgo a derecha, se puede observar dispersión. 
+
+```{r, warning=FALSE, echo=FALSE}
+base %>% filter(Departamento== "Atlantico") %>%
+  summarise(media_precio=format(mean(precio_mod),big.mark=","), 
+    mediana_precio=format(median(precio_mod), big.mark=","), 
+    moda_precio=format(mode(precio_mod),big.mark=",")) %>%
+  knitr::kable(col.names = c('Media', 'Mediana', 'Moda'))
+```
+```{r, warning=FALSE, echo=FALSE}
+base %>% filter(Departamento== "Atlantico") %>% 
+  summarise(
+    q1 = format(quantile(precio_mod, 0.25), big.mark = ","),
+    q2 = format(quantile(precio_mod, 0.50), big.mark = ","),
+    q3 = format(quantile(precio_mod, 0.75), big.mark = ","),
+    iqr=format(IQR(precio_mod), big.mark = ","),
+    LS=format(quantile(precio_mod, 0.75)+1.5*(IQR(precio_mod)), big.mark=","))%>% 
+knitr::kable(col.names = c('Cuartil 1', 'Cuartil 2', 'Cuartil 3','Rango Intercuartilico',"Lim. Superior"))
+```
+
++ El precio promedio en Atlántico fue de 506,250,839 pesos. 
++ El 50% de los precios en Atlántico son de 417,198,700 pesos o menos, y el otro 50% es mayor que es valor. 
++ El precio que más se repite en Atlántico es de 108,200,000 pesos. 
++ El 25% de los proyectos en Atlántico tiene un precio de 302,838,250 pesos o menos y el otro 75% mayor a este valor.
++ El 75% de los proyectos en Atlántico tiene un precio de 506,003,700 pesos o menos y el otro 25% mayor a este valor.
++ El rango intercuartílico es de 203,165,450 pesos.
++ Un precio se considera atípico en Atlántico con 810,751,875 porque es mayor al límite superior, hay sesgo a derecha, se puede observar dispersión. 
+
+```{r, warning=FALSE, echo=FALSE}
+base %>% filter(Departamento== "Bogotá DC") %>%
+  summarise(media_precio=format(mean(precio_mod),big.mark=","), 
+    mediana_precio=format(median(precio_mod), big.mark=","), 
+    moda_precio=format(mode(precio_mod),big.mark=",")) %>%
+  knitr::kable(col.names = c('Media', 'Mediana', 'Moda'))
+```
+```{r, warning=FALSE, echo=FALSE}
+base %>% filter(Departamento== "Bogotá DC") %>% 
+  summarise(
+    q1 = format(quantile(precio_mod, 0.25), big.mark = ","),
+    q2 = format(quantile(precio_mod, 0.50), big.mark = ","),
+    q3 = format(quantile(precio_mod, 0.75), big.mark = ","),
+    iqr=format(IQR(precio_mod), big.mark = ","),
+    LS=format(quantile(precio_mod, 0.75)+1.5*(IQR(precio_mod)), big.mark=","))%>% 
+knitr::kable(col.names = c('Cuartil 1', 'Cuartil 2', 'Cuartil 3','Rango Intercuartilico',"Lim. Superior"))
+```
+
++ El precio promedio en Bogotá DC fue de 527,395,533 pesos. 
++ El 50% de los precios en Bogotá DC son de 438,978,000 pesos o menos, y el otro 50% es mayor que es valor. 
++ El precio que más se repite en Bogotá DC es de 155,500,000 pesos. 
++ El 25% de los proyectos en Bogotá DC tiene un precio de 296,593,094 pesos o menos y el otro 75% mayor a este valor.
++ El 75% de los proyectos en Bogotá DC tiene un precio de 574,300,000 pesos o menos y el otro 25% mayor a este valor. 
++ El rango intercuartílico es de 277,706,906 pesos.
++ Un precio se considera atípico en Bogotá DC con 990,860,359 porque es mayor al límite superior, hay sesgo a derecha, se puede observar dispersión. 
+
+### Medidas de dispersión y forma para la variable Precio
+
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
+
+# Histograma del precio para los departamentos: Antioquia, Atlantico y Bogotá
+base %>% 
+  filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>% 
+  ggplot(aes(x=precio_mod)) + 
+  geom_histogram(color="darkblue", fill="lightblue")+
+  labs(x="Precio", y="Frecuencia")+
+  ggtitle("Histograma de los precios de los proyectos en Antioquia, Atlántico y Bogotá")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  scale_x_continuous(labels = dollar)
+```
+```{r, warning=FALSE, echo=FALSE}
+# Medidas de dispersión para PRECIO
+#función coeficiente de variación
+coef_var <- function(x, na.rm = FALSE) {
+  sd(x, na.rm=na.rm) / mean(x, na.rm=na.rm)
+}
+
+base %>% filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>% 
+  summarise(min=format(min(precio_mod), big.mark = ","),
+    max=format(max(precio_mod), big.mark = ","),
+    rango=format(max(precio_mod)-min(precio_mod), big.mark = ","),
+    var=format(var(precio_mod), big.mark = ","),
+    sd=format(sd(precio_mod), big.mark = ","),
+    cv=format(coef_var(precio_mod), big.mark = ",")) %>% 
+knitr::kable(col.names = c('Mínimo','Máximo','Rango','Varianza','Desv. Estandar','Coef. de Variación'))
+```
+
+```{r, warning=FALSE, echo=FALSE}
+# Medidas de forma para PRECIO
+base %>%  filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>% 
+summarise(CAP=(3*(mean(precio_mod)-median(precio_mod)))/sd(precio_mod),
+          kurt=kurtosis(precio_mod)) %>% 
+  knitr::kable(col.names = c('Coef. de Asimetría de Pearson','Curtosis'))
+```
+
++ El precio más bajo de todos los proyectos de Antioquia, Atlántico y Bogotá DC es de 77,900,000 pesos. 
++ El precio más alto de todos los proyectos de Antioquia, Atlántico y Bogotá DC es de 4,055,205,550 pesos. 
++ El precio de los proyectos que es más alto, es 3,977,305,550 pesos más caro que aquel con el menor precio.
++ La varianza de los precios en Antioquia, Atlántico y Bogotá DC es de 169,191,736,705,325,728 pesos.
++ La distancia promedio entre cada precio y la media es de 411,329,232 pesos.
++ Los precios de los proyectos en Antioquia, Atlántico y Bogotá DC es un conjunto de datos heterogéneos porque el coeficiente de variación es de 77% y esto es mayor al 20%, igualmente, el promedio no será representativo del conjunto de datos. 
++ El conjunto de datos conformado por los precios de los proyectos en Antioquia, Atlántico y Bogotá DC está sesgado a la derecha, pues el coeficiente de asimetría de Pearson es de 0.61 y esto es mayor a 0, además, su media es mayor que la mediana.
++ Los precios de los proyectos en Antioquia, Atlántico y Bogotá DC presentan una distribución leptocúrtica, porque la curtosis es de 28.1 y esto es mayor a cero, lo que quiere decir que es una curva más apuntada y con colas más gruesas que la normal. 
+
+### Medidas de tendencia central y posición para la variable Área Construida
+
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
+##################### AREA
+
+# Diagrama de cajas y bigotes area
+base %>% 
+  filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>%
+  ggplot(aes(x=Departamento, y=area_construida)) + 
+  geom_boxplot()+coord_flip()+
+  labs(x="Departamento", y="Área construida")+
+  ggtitle("Diagrama de Cajas y Bigotes de las áreas construidas en los departamentos")+
+  theme(plot.title = element_text(hjust = 1.2))
+```
+```{r, warning=FALSE, echo=FALSE}
+# Medidas de tendencia central para AREA CONSTRUIDA
+
+base %>% filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>%
+  summarise(media_area=mean(area_construida), mediana_area=median(area_construida), moda_area=mode(area_construida)) %>% 
+  knitr::kable(col.names = c('Media', 'Mediana', 'Moda'))
+```
+
+```{r, warning=FALSE, echo=FALSE}
+# Medidas de posicion AREA CONSTRUIDA
+base %>% filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>% 
+  summarise(
+    q1 = quantile(area_construida, 0.25),
+    q2 = quantile(area_construida, 0.50),
+    q3 = quantile(area_construida, 0.75),
+    iqr=IQR(area_construida),
+    LS=format(quantile(area_construida, 0.75)+1.5*(IQR(area_construida)), big.mark=",")) %>% 
+knitr::kable(col.names = c('Cuartil 1', 'Cuartil 2', 'Cuartil 3','Rango Intercuartilico',"Lim. Superior"))
+```
+
++ El área construida promedio en Antioquia, Atlántico y Bogotá DC DC fue de 84.41 metros cuadrados. 
++ El 50% de las áreas construidas en Antioquia, Atlántico y Bogotá DC son de 77 metros cuadrados o menos, y el otro 50% es mayor que es valor. 
++ El área construida que más se repite en Antioquia, Atlántico y Bogotá DC es de 58 metros cuadrados. 
++ El 25% de los proyectos en Antioquia, Atlántico y Bogotá DC tiene un área de 61 metros cuadrados o menos y el otro 75% mayor a este valor.
++ El 75% de los proyectos en Antioquia, Atlántico y Bogotá DC tiene un área construida de 97.38 metros cuadrados o menos y el otro 25% mayor a este valor. 
++ El rango intercuartílico es de 36.38 metros cuadrados.
++ Un área construida se considera atípico en Antioquia, Atlántico y Bogotá DC con 151.95 porque es mayor al límite superior, hay sesgo a derecha, se puede observar dispersión. 
+
+### Medidas de dispersión y forma para la variable Área Construida
+
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
+# Histograma del área para los departamentos: Antioquia, Atlantico y Bogotá
+base %>% 
+  filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>% 
+  ggplot(aes(x=area_construida)) + 
+  geom_histogram(color="darkblue", fill="lightblue")+
+  labs(x="Área construida", y="Frecuencia")+
+  ggtitle("Histograma de las áreas construidas en Antioquia, Atlántico y Bogotá")+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+```{r, warning=FALSE, echo=FALSE}
+# Medidas de dispersión para AREA
+#función coeficiente de variación
+coef_var <- function(x, na.rm = FALSE) {
+  sd(x, na.rm=na.rm) / mean(x, na.rm=na.rm)
+}
+
+base %>% filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>% 
+  summarise(min=min(area_construida),
+    max=max(area_construida),
+    rango=max(area_construida)-min(area_construida),
+    var=var(area_construida),
+    sd=sd(area_construida),
+    cv=coef_var(area_construida)) %>% 
+knitr::kable(col.names = c('Mínimo','Máximo','Rango','Varianza','Desv. Estandar','Coef. de Variación'))
+```
+```{r, warning=FALSE, echo=FALSE}
+# Medidas de forma para AREA
+base %>%  filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>% 
+summarise(CAP=(3*(mean(area_construida)-median(area_construida)))/sd(area_construida),
+          kurt=kurtosis(area_construida)) %>% 
+  knitr::kable(col.names = c('Coef. de Asimetría de Pearson','Curtosis'))
+```
+
++ El área construida más bajo de todos los proyectos de Antioquia, Atlántico y Bogotá DC es de 21.2 metros cuadrados. 
++ El área construida más alto de todos los proyectos de Antioquia, Atlántico y Bogotá DC es de 404 metros cuadrados. 
++ El área construida de los proyectos que es más alta, es 382.8 metros cuadrados más caro que aquel con la menor área construida.
++ La varianza de las áreas construidas en Antioquia, Atlántico y Bogotá DC es de 1657.775 metros cuadrados.
++ La distancia promedio entre cada área construida y la media es de 40.71 metros cuadrados.
++ Las áreas construidas de los proyectos en Antioquia, Atlántico y Bogotá DC es un conjunto de datos heterogéneos porque el coeficiente de variación es de 48% y esto es mayor al 20%, igualmente, el promedio no será representativo del conjunto de datos. 
++ El conjunto de datos conformado por las áreas construidas de los proyectos en Antioquia, Atlántico y Bogotá DC está sesgado a la derecha, pues el coeficiente de asimetría de Pearson es de 0.54 y esto es mayor a 0, además, su media es mayor que la mediana.
++ Las áreas construidas de los proyectos en Antioquia, Atlántico y Bogotá DC presentan una distribución leptocúrtica, porque la curtosis es de 15.42 y esto es mayor a cero, lo que quiere decir que es una curva más apuntada y con colas más gruesas que la normal. 
+
+### Medidas de tendencia central, posición y dispersión para la variable Álcobas
+
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE,fig.width=4, fig.height=4}
+# Tabla de las alcobas Antioquia, Atlantico y Bogotá
+base %>% 
+  filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>% 
+  group_by(alcobas)%>%
+  summarise(Cantidad=n()) %>% 
+  ungroup() %>% 
+  mutate(Porcentaje=round(Cantidad/sum(Cantidad)*100,2)) %>% 
+  knitr::kable(col.names = c('No. de Alcobas', 'Cantidad', 'Porcentaje'))
+```
+
+```{r, echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
+#################### ALCOBAS
+# Diagrama de cajas y bigotes alcobas
+base %>% 
+  filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>%
+  ggplot(aes(x=Departamento, y=alcobas)) + 
+  geom_boxplot()+coord_flip()+
+  labs(x="Departamento", y="Alcobas")+
+  ggtitle("No. de alcobas en los proyectos de los departamentos")+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+```{r, warning=FALSE, echo=FALSE}
+mode <- function(x) {
+   return(as.numeric(names(which.max(table(x)))))
+}
+```
+```{r, warning=FALSE, echo=FALSE}
+# Medidas de tendencia central para ALCOBAS
+
+base %>% filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>%
+  summarise(media_alc=mean(alcobas), mediana_alc=median(alcobas), moda_alc=mode(alcobas)) %>% 
+  knitr::kable(col.names = c('Media', 'Mediana', 'Moda'))
+```
+```{r, warning=FALSE, echo=FALSE}
+# Medidas de posicion ALCOBAS
+base %>% filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>% 
+  summarise(
+    q1 = quantile(alcobas, 0.25),
+    q2 = quantile(alcobas, 0.50),
+    q3 = quantile(alcobas, 0.75),
+    iqr=IQR(alcobas),
+    LS=format(quantile(alcobas, 0.75)+1.5*(IQR(alcobas)), big.mark=",")) %>% 
+knitr::kable(col.names = c('Cuartil 1', 'Cuartil 2', 'Cuartil 3','Rango Intercuartilico','Lim. Superior'))
+```
+```{r, warning=FALSE, echo=FALSE}
+# Medidas de dispersión para ALCOBAS
+#función coeficiente de variación
+coef_var <- function(x, na.rm = FALSE) {
+  sd(x, na.rm=na.rm) / mean(x, na.rm=na.rm)
+}
+
+base %>% filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") %>% 
+  summarise(min=min(alcobas),
+    max=max(alcobas),
+    rango=max(alcobas)-min(alcobas),
+    var=var(alcobas),
+    sd=sd(alcobas),
+    cv=coef_var(alcobas)) %>% 
+knitr::kable(col.names = c('Mínimo','Máximo','Rango','Varianza','Desv. Estandar','Coef. de Variación'))
+```
+
++ El número de alcobas promedio en los proyectos de Antioquia, Atlántico y Bogotá DC DC fue 2.54. 
++ El 50% del número de alcobas en los proyectos en Antioquia, Atlántico y Bogotá DC son 3 o menos, y el otro 50% es mayor que es valor. 
++ El número de alcobas que más se repite en Antioquia, Atlántico y Bogotá DC es 3. 
++ El 25% de los proyectos en Antioquia, Atlántico y Bogotá DC tiene un número de alcobas de 2 o menos y el otro 75% mayor a este valor.
++ El 75% de los proyectos en Antioquia, Atlántico y Bogotá DC tiene un número de alcobas de 3 o menos y el otro 25% mayor a este valor. 
++ El rango intercuartílico es de 1 metros cuadrados.
++ Un área construida se considera atípico en Antioquia, Atlántico y Bogotá DC con 4.5 porque es mayor al límite superior, hay sesgo a derecha, se puede observar dispersión. 
++ El número de alcobas más bajo de todos los proyectos de Antioquia, Atlántico y Bogotá DC es 1. 
++ El número de alcobas más alto de todos los proyectos de Antioquia, Atlántico y Bogotá DC es de 4. 
++ El número de alcobas de los proyectos que es más alto, es 3 veces más caro que aquel con el menor número de alcobas.
++ La varianza de los número de alcobas en Antioquia, Atlántico y Bogotá DC es de 0.57.
++ La distancia promedio entre cada número de alcoba  y la media es de 0.75.
++ Las áreas construidas de los proyectos en Antioquia, Atlántico y Bogotá DC es un conjunto de datos heterogéneos porque el coeficiente de variación es de 29% y esto es mayor al 20%, igualmente, el promedio no será representativo del conjunto de datos. 
+
+# Extracción de la Muestra y Análisis Inferencial
+
+La inmobiliaria afirma que el promedio del precio de los proyectos en los departamentos Antioquia, Atlántico y Bogotá es de 600 millones. Para probar dicha afirmación se selecciono una muestra aleatoria, para ello el cliente permitio un error de estimación menor que 100 millones y se siguio el procedimiento descrito a continuación:
+
+Primero se hallo el tamaño muestral para la media con un nivel de confianza del 95%, aplicando la siguiente fórmula:
+
+$$n=\left ( \frac{Z_{\alpha /2}\sigma }{\varepsilon } \right )^{2}$$
+donde:
+  $$\alpha=1-0.95=0.5 $$
+  $$Z_{\alpha /2}=1.95$$
+  $$\sigma=411,329,232$$
+  $$\varepsilon=100,000,000$$
+
+
+Al realizar las operaciones correspondientes se encuentra que el tamaño de la muestra es de 260.
+
+Luego para seleccionar la muestra se hace un muestreo aleatorio simple con el comando: _sample(dim(base_dep)[1],260)_ y para reproducir el resultado en siguientes ocasiones se fija una semilla con el comando _set.seed(123456)_.
+
+Ya seleccionada la muestra se hallo su media dando como resultado 516,583,483 y se sabe que la desviacion estandar poblacional es de 411,329,232. Con los datos anteriores se realizo la siguiente prueba de hipótesis con un nivel se significancia del 0.05.
+
+- Planteamiento de la hipótesis.
+$$H_{0}:\mu \leq 600,000,000$$
+$$H_{1}:\mu > 600,000,000$$
+
+- Como el nivel de significancia es de 0.05, se tiene que alpha = 0.05
+
+- El estadístico de prueba es el siguiente:
+$$Z_{c}=\frac{\bar{X}-\mu }{\sigma /\sqrt{n}}$$
+Al calcularlo en R con el comando _zc=(prom-miu)/(sd/sqrt(n))_, se obtiene $$Z_{c}=-3.27$$
+
+- La regla de desición que se formulo fue el valor p y como es una prueba a una cola a derecha el p_valor tendra la siguiente ecuación:
+$$p-valor=P(Z>Z_{c})$$
+Y se calculo en R con el comando _pvalor=1-pnorm(zc)_, obteniendo p valor de 0.99.
+
+En conclusión, con un nivel de significancia de 0.05, no hay evidencia estadística que rechace $H_{0}$, los datos dan evidencia que el promedio de los precios de los proyectos en los tres departamentos es inferior a 600 millones, lo que afirma que la inmobiliaria esta en lo correcto.
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+
+base_dep1<-base %>% filter(Departamento== "Antioquia" | Departamento== "Atlantico" | Departamento== "Bogotá DC") 
+
+base_dep<-base_dep1%>% 
+  summarise(min=min(precio_mod),
+    max=max(precio_mod),
+    rango=max(precio_mod)-min(precio_mod),
+    var=var(precio_mod),
+    sd=sd(precio_mod),
+    mean=mean(precio_mod))
+
+#estoy hallando el n solamente, tamaño de la muestra
+nc= 0.95
+e=50000000 
+R=base_dep$rango 
+desv=base_dep$sd
+a=1-nc
+options(scipen = 99)
+z=qnorm(a/2, lower.tail=FALSE)
+n=(z*desv/e)^2
+n=ceiling(n)
+
+#seleccionar 260 registros aleatorios
+
+#seleccionando la muestra
+set.seed(123456) #fijar semilla, en procesos aleatorios
+filas_selec_dep<-sample(dim(base_dep1)[1],n) #muestreo aleatorio simple se seleccionan los 286 proyectos de muestra
+muestra_dep<-base_dep1[filas_selec_dep,] 
+
+prop.table(table(muestra_dep$Departamento))
+prop.table(table(base_dep$Departamento))
+
+mean(muestra_dep$precio_mod)
+sd(base_dep1$precio_mod)
+valor_negocio=600000000
+#prueba de hipotesis para precio en conjunto de los tres deps
+n=dim(muestra_dep)[1] #tamaño de la muestra 1, lenght(muestra)
+prom=mean(muestra_dep$precio_mod) #mean(muestra)
+miu=valor_negocio
+sd=sd(base_dep1$precio_mod)
+zc=(prom-miu)/(sd/sqrt(n))
+z=qnorm(0.025)
+pvalor=1-pnorm(zc)
+```
+
+# Referencias
+
+Ministerio de Vivienda (2022, Mayo 12). El mejor abril de la historia para la compra de vivienda en Colombia | Minvivienda. Minvivienda.gov.co. https://acortar.link/4Y5NAr
+
+Colprensa. (2022, Enero 7). Las ventas de viviendas nuevas aumentaron 28% y lograron récord histórico en 2021. Diario La República; Diario La republica. https://www.larepublica.co/economia/las-ventas-de-viviendas-nuevas-aumentaron-28-y-lograron-record-historico-en-2021-3283876
+
